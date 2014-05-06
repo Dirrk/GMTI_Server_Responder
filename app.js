@@ -97,7 +97,8 @@ else {
 
             var data = {
                 cpu: 0.00,
-                mem: (1 - osUtil.freememPercentage())*100
+                mem: (1 - osUtil.freememPercentage())*100,
+                server: os.hostname() // kept for backwards comparability
             };
 
             osUtil.cpuUsage(function (cpu) {
