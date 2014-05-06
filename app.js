@@ -63,30 +63,41 @@ else {
         app.use(express.json());
 
 
-        app.get('/', function (req, res) {
+        // make currentData a global variable that gets updated periodically and when we call it way we do not need to wait on the server to process the command but can also refresh "instantly"
+        var currentData = {
 
-            getData(function (data) {
-                if (data) {
-                    res.json(data);
-                } else {
-                    res.send(500);
+        };
+
+        app.get('/', function (req, res) {
+            res.json(currentData);
+            run();
+        });
+
+        function run() {
+
+            currentData = currentData;
+            getData(function (dat) {
+                if (dat) {
+                    currentData = dat;
                 }
             });
-        });
+        };
+
 
         http.createServer(app).listen(
             app.get('port'), function () {
                 console.log('Express server listening on port ' + app.get('port'));
+                run();
                 }
         );
 
+        setInterval(run, 15000);
 
         function getData(cb) {
 
             var data = {
                 cpu: 0.00,
-                mem: (1 - osUtil.freememPercentage())*100,
-                server: os.hostname()
+                mem: (1 - osUtil.freememPercentage())*100
             };
 
             osUtil.cpuUsage(function (cpu) {
